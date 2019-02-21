@@ -1,3 +1,3 @@
 #!/bin/sh
 
-docker build . -t verybadsoldier/firehol-update-ipsets
+docker build . -t verybadsoldier/iptables-whitelist-googleips

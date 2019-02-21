@@ -10,7 +10,7 @@ if [ $? -eq 1 ]; then
     iptables -A "$CHAIN_NAME" -m set ! --match-set "$IPSET_NAME" src -j DROP
 
     for i in $TARGET_CHAINS; do
-        iptables -A "$i" -p tcp -m tcp --dport $port -j "$CHAIN_NAME"
+        iptables -A "$i" -p tcp -m tcp --dport $TCP_PORT -j "$CHAIN_NAME"
         #iptables -A INPUT -p tcp -m tcp --dport $port -j "$CHAIN_NAME"
         #iptables -A DOCKER-USER -p tcp -m tcp --dport $port -j "$CHAIN_NAME"
     done
