@@ -5,27 +5,30 @@ IPTABLES_COMMENT="Check for Google IP"
 
 ipset -! -q create "$IPSET_NAME" nethash
 
+
+# create/update chain that drops Google IPs
 iptables -n --list "$CHAIN_NAME" >/dev/null 2>&1
 if [ $? -eq 0 ]; then
     iptables -F "$CHAIN_NAME"
 else
     iptables -N "$CHAIN_NAME" 2> /dev/null
 fi
+iptables -A "$CHAIN_NAME" -m set ! --match-set "$IPSET_NAME" src -j DROP -m comment --comment "Drops all packets not coming from Google IPs"
 
-iptables -A "$CHAIN_NAME" -m set ! --match-set "$IPSET_NAME" src -j DROP
 
+# delete old rules that forward to google chain (port or anything might have changed)
 cur_rules=$(iptables-save | grep -e "--comment \"$IPTABLES_COMMENT\"")
+OLDIFS="$IFS"
 IFS=$'\n'
 for i in $cur_rules; do
-    i="${i:3}"
-    i=($i)
-    iptables -D ${i[@]}
+    eval iptables -D ${i:3}
 done
-unset IFS
+IFS="$OLDIFS"
 
 for i in $TARGET_CHAINS; do
     iptables -I "$i" -p tcp -m tcp --dport $TCP_PORT -j "$CHAIN_NAME" -m comment --comment "$IPTABLES_COMMENT"
 done
+
 
 ipset -! -q destroy "$IPSET_NAME_TMP"
 ipset create "$IPSET_NAME_TMP" nethash

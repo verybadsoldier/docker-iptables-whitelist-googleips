@@ -1,0 +1,11 @@
+version: '3'
+services:
+  iptables-whitelist-googleips:
+    container_name: iptables-whitelist-googleips
+    image: "verybadsoldier/iptables-whitelist-googleips"
+    network_mode: "host"
+    environment:
+      - TCP_PORT=9568
+    cap_add:
+      - NET_ADMIN
+    restart: always
