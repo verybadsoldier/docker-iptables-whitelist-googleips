@@ -1,4 +1,4 @@
-FROM ubuntu:bionic
+FROM debian:jessie-slim
 
 RUN apt-get update;apt-get install -y bash dnsutils ipset iptables && rm -rf /etc/apt/cache/*
 
